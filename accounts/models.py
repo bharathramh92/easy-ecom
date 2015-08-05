@@ -17,6 +17,7 @@ class Address(models.Model):
     country_code_phone_number = models.CharField(max_length = 5)
     added_datetime = models.DateTimeField(null=True , blank= True)
     last_updated_datetime = models.DateTimeField(null=True , blank= True)
+    user = models.ForeignKey(User, null= True)
 
 class UserExtended(models.Model):
     user = models.OneToOneField(User)
@@ -29,12 +30,7 @@ class UserExtended(models.Model):
     is_phone_number_verified = models.BooleanField(default=False)
     phone_number_verified_datetime = models.DateTimeField(null=True , blank= True)
     phone_number_updated_datetime = models.DateTimeField(null=True , blank= True)
-    addresses = models.ManyToManyField(Address, through='UserAddressRelation')
     selling_enabled = models.BooleanField(default= False)
-
-class UserAddressRelation(models.Model):
-    user_extended = models.ForeignKey(UserExtended)
-    address = models.ForeignKey(Address)
 
 class EmailVerification(models.Model):
     user = models.ForeignKey(User)
