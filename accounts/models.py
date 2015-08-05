@@ -25,9 +25,12 @@ class UserExtended(models.Model):
     phone_number = models.CharField(max_length = 15)
     country_code_phone_number = models.CharField(max_length = 5)
     is_email_verified = models.BooleanField(default=False)
+    email_verified_datetime = models.DateTimeField(null=True , blank= True)
     is_phone_number_verified = models.BooleanField(default=False)
+    phone_number_verified_datetime = models.DateTimeField(null=True , blank= True)
     phone_number_updated_datetime = models.DateTimeField(null=True , blank= True)
     addresses = models.ManyToManyField(Address, through='UserAddressRelation')
+    selling_enabled = models.BooleanField(default= False)
 
 class UserAddressRelation(models.Model):
     user_extended = models.ForeignKey(UserExtended)
@@ -46,3 +49,16 @@ class SellerFeedback(models.Model):
     seller = models.ForeignKey(User, related_name= 'seller')
     review_description = models.CharField(max_length=1000)
     review_points = models.PositiveSmallIntegerField()
+    posting_datetime = models.DateTimeField(default =  timezone.now)
+
+class CustomerContactSeller(models.Model):
+    contacted_by = models.ForeignKey(User, related_name= 'contacted_by')
+    seller = models.ForeignKey(User, related_name= 'seller_contact')
+    subject = models.CharField(max_length=80)
+    message = models.CharField(max_length=1000)
+    posting_datetime = models.DateTimeField(default =  timezone.now)
+
+class SellerReplyForContacting(models.Model):
+    reply_for = models.ForeignKey(CustomerContactSeller, related_name= 'reply_for_customer_contact')
+    message = models.CharField(max_length=1000)
+    posting_datetime = models.DateTimeField(default =  timezone.now)
