@@ -20,6 +20,9 @@ def loginView(request):
             if loginForm.is_valid():
                 username = loginForm.cleaned_data['username']
                 loginPassword = loginForm.cleaned_data['loginPassword']
+                if '@' in username:
+                    username = User.objects.get(email=username)
+
                 user = authenticate(username= username, password=loginPassword)
                 if user is not None:
                     # the password verified for the user
@@ -28,11 +31,11 @@ def loginView(request):
                         # print("User is valid, active and authenticated")
                         return HttpResponseRedirect(reverse('accounts:dashboard'))
                     else:
-                        login_error_messages.append(ac_msg.account_disabled)
+                        login_error_messages.append(ac_msg.login_account_disabled)
                         # print("The password is valid, but the account has been disabled!")
                 else:
                     # the authentication system was unable to verify the username and password
-                    login_error_messages.append(ac_msg.wrong_username_password)
+                    login_error_messages.append(ac_msg.login_wrong_username_password)
                     # print("username/password combination was incorrect")
 
             registerForm = RegisterForm()

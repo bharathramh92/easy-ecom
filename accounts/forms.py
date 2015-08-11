@@ -2,11 +2,12 @@ from django import forms
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from constants import accounts_messages as ac_msg
 
 class LoginForm(forms.Form):
 
-    username = forms.CharField(label='Username',
-                               max_length=20,
+    username = forms.CharField(label='Username/Email',
+                               max_length=100,
                                required= True)
 
     loginPassword = forms.CharField(widget= forms.PasswordInput,
@@ -60,9 +61,9 @@ class RegisterForm(forms.Form):
 
 
         if doesEmailExists(email):
-            self.add_error('email', 'User exists with same email id. Try different username')
+            self.add_error('email', ac_msg.registration_same_email_address)
 
         if password != confirmPassword:
-            self.add_error('password', 'Passwords not matching')
+            self.add_error('password', ac_msg.registration_passwords_not_matching)
 
         return cleaned_data
