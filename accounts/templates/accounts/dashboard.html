@@ -1,0 +1,7 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+    {% if user.is_authenticated %}Hello, {{ user.username }}.{% endif %}
+{% endblock %}
