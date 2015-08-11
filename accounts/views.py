@@ -6,9 +6,14 @@ import datetime
 from .forms import LoginForm, RegisterForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from .models import UserExtended
+from accounts.models import UserExtended
 from constants import accounts_messages as ac_msg
 from ecom_functions import random_alphanumeric as ran
+from django.core.mail import send_mail, EmailMessage
+from easy_ecom import settings
+from easy_ecom import settings_sensitive
+from .models import EmailVerification
+
 # Create your views here.
 def loginView(request):
     # if this is a POST request we need to process the form data
@@ -34,7 +39,7 @@ def loginView(request):
                         login_error_messages.append(ac_msg.login_account_disabled)
                         # print("The password is valid, but the account has been disabled!")
                 else:
-                    # the authentication system was unable to verify the username and password
+                    # the accounts system was unable to verify the username and password
                     login_error_messages.append(ac_msg.login_wrong_username_password)
                     # print("username/password combination was incorrect")
 
@@ -48,14 +53,20 @@ def loginView(request):
                 lastName = registerForm.cleaned_data['lastName']
                 while(True):
                     try:
-                        username = ran.rand_from_name(firstName, lastName)
+                        username = ran.rand_from_name(firstName.lower(), lastName.lower())
                         user = User.objects.create_user(username, email=email, password=password)
-                        user.first_name = firstName
-                        user.last_name = lastName
-                        user.save()
                         break
                     except Exception as e:
                         print(e)
+                user.first_name = firstName
+                user.last_name = lastName
+                user.save()
+                UserExtended(user = user).save()
+                verification_code = ran.rand_alphanumeric()
+                email_msg = ac_msg.registration_email_verfication
+                email_msg += "http://127.0.0.1:8000" + reverse('accounts:verify', kwargs= {'verification_code' : verification_code, 'username' : username})
+                send_mail('Verify your email', email_msg, settings_sensitive.EMAIL_HOST_USER, [email], fail_silently=False)
+                email_ver_storage = EmailVerification.objects.create(user=user, verification_code = verification_code)
                 return HttpResponseRedirect(reverse('accounts:dashboard'))
 
             loginForm = LoginForm()
@@ -78,3 +89,15 @@ def dashboardView(request):
 def logoutView(request):
     logout(request)
     return HttpResponseRedirect(reverse('accounts:logout'))
+
+def verificationView(request, verification_code, username):
+    result = EmailVerification.objects.filter(user__username = username, verification_code = verification_code)
+    if len(result) != 0:
+        user = User.objects.get(username = username)
+        user.userextended.is_email_verified = True
+        user.userextended.save()
+        result.delete()
+        return HttpResponse("Verified")
+    else:
+        print("invalid or expired")
+    return HttpResponse("not Verified")

@@ -20,8 +20,6 @@ class UserExtended(models.Model):
     phone_number_updated_datetime = models.DateTimeField(null=True , blank= True)
     selling_enabled = models.BooleanField(default= False)
 
-    def __str__(self):
-        return self
 
 class Address(models.Model):
     contact_name = models.CharField(max_length=100, null= False)

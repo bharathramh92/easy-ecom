@@ -8,5 +8,6 @@ urlpatterns = [
     url(r'^login/$', views.loginView, name= "login"),
     url(r'^logout/$', views.logoutView, name= "logout"),
     url(r'^$', views.dashboardView, name= "dashboard"),
+    url(r'^verify/(?P<username>[\w]*)/(?P<verification_code>[a-z0-9]*)/$', views.verificationView, name= "verify"),
 
 ]

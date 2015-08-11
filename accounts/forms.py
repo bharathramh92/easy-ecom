@@ -34,12 +34,12 @@ class RegisterForm(forms.Form):
                                required= True)
 
     firstName = forms.CharField(label='First Name',
-                               max_length=80,
+                               max_length=30,
                                required= True,
                                min_length= 2)
 
     lastName = forms.CharField(label='Last Name',
-                               max_length=80,
+                               max_length=30,
                                required= True,
                                min_length= 2)
 
