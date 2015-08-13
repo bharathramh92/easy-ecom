@@ -3,3 +3,5 @@ login_account_disabled = "Your account has been disabled! Contact administrator.
 registration_same_email_address = "User exists with same email id. Use different email address"
 registration_passwords_not_matching = "Passwords are not matching"
 registration_email_verfication = "Please click the following link to verify your account\n"
+forgot_password_message = "Please click the following link to reset your password\n"
+email_not_found = "Given email address not found in our database. Please check again and enter the email address."

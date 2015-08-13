@@ -14,7 +14,9 @@
         {{ loginForm }}
         <input type="submit" name="login" value="Login">
     </form>
-
+<br/>
+    <a href="{% url 'accounts:trouble_login' %}"><p>Need help?</p></a>
+<br/>
     <p>Register Form</p>
 
     {% for register_error_message in register_error_messages %}

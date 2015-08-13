@@ -15,9 +15,14 @@ class LoginForm(forms.Form):
                                max_length=20,
                                required= True)
 
-    def clean(self):
-        cleaned_data = super(LoginForm, self).clean()
-        print("login form test")
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if '@' in username:
+            try:
+                username = User.objects.get(email=username).username
+            except Exception:
+                raise forms.ValidationError((ac_msg.login_wrong_username_password), code='invalid')
+        return username
 
 def doesEmailExists(email):
     try:
@@ -62,6 +67,44 @@ class RegisterForm(forms.Form):
 
         if doesEmailExists(email):
             self.add_error('email', ac_msg.registration_same_email_address)
+
+        if password != confirmPassword:
+            self.add_error('password', ac_msg.registration_passwords_not_matching)
+
+        return cleaned_data
+
+
+class EmailForm(forms.Form):
+
+    email = forms.EmailField(label='Email',
+                               max_length=100,
+                               required= True)
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        try:
+            User.objects.get(email = email)
+        except Exception:
+            self.add_error('email', ac_msg.email_not_found)
+        return email
+
+class ForgotPasswordForm(forms.Form):
+
+    password = forms.CharField(widget= forms.PasswordInput,
+                               label='Password',
+                               max_length=20,
+                               required= True)
+
+    confirmPassword = forms.CharField(widget= forms.PasswordInput,
+                               label='Confirm Password',
+                               max_length=20,
+                               required= True)
+
+    def clean(self):
+        cleaned_data = super(ForgotPasswordForm, self).clean()
+
+        password = cleaned_data.get('password')
+        confirmPassword = cleaned_data.get('confirmPassword')
 
         if password != confirmPassword:
             self.add_error('password', ac_msg.registration_passwords_not_matching)
