@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^forgetPassword/$', views.forgetPasswordView, name= "forget_password"),
     url(r'^forgetPassword/reset/$', views.forgotPasswordCheckView, name= "forget_password_check"),
     url(r'^resendVerificationEmail/$', views.resendVerificationEmailView, name= "resend_verification_email"),
+    url(r'^changePassword/$', views.changePasswordView, name= "change_password"),
 ]

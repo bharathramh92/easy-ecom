@@ -110,3 +110,39 @@ class ForgotPasswordForm(forms.Form):
             self.add_error('password', ac_msg.registration_passwords_not_matching)
 
         return cleaned_data
+
+class ChangePasswordForm(forms.Form):
+
+    currentPassword = forms.CharField(widget= forms.PasswordInput,
+                               label='Current Password',
+                               max_length=20,
+                               required= True)
+
+    newPassword = forms.CharField(widget= forms.PasswordInput,
+                               label='New Password',
+                               max_length=20,
+                               required= True)
+
+    confirmNewPassword = forms.CharField(widget= forms.PasswordInput,
+                               label='Confirm New Password',
+                               max_length=20,
+                               required= True)
+
+    def __init__(self,*args,**kwargs):
+        self.user = kwargs.pop('user')
+        super(ChangePasswordForm,self).__init__(*args,**kwargs)
+
+    def clean(self):
+        print("user in form ", self.user)
+        cleaned_data = super(ChangePasswordForm, self).clean()
+        currentPassword = cleaned_data.get('currentPassword')
+        newPassword = cleaned_data.get('newPassword')
+        confirmNewPassword = cleaned_data.get('confirmNewPassword')
+
+        if not self.user.check_password(currentPassword):
+            self.add_error('currentPassword', ac_msg.wrong_current_password)
+
+        if newPassword != confirmNewPassword:
+            self.add_error('newPassword', ac_msg.registration_passwords_not_matching)
+
+        return cleaned_data

@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 import datetime
 from django.utils import timezone
-from .forms import LoginForm, RegisterForm, EmailForm, ForgotPasswordForm
+from .forms import LoginForm, RegisterForm, EmailForm, ForgotPasswordForm, ChangePasswordForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from constants import accounts_messages as ac_msg
@@ -234,3 +234,27 @@ def resendVerificationEmailView(request):
         form = EmailForm()
 
     return render(request, "accounts/resend_verification_email.html", {'form': form})
+
+@login_required()
+def changePasswordView(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = ChangePasswordForm(request.POST, user = request.user)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+
+            newPassword = form.cleaned_data['newPassword']
+            request.user.set_password(newPassword)
+            request.user.save()
+            logout(request)
+            return render(request, "accounts/change_password_done.html", {})
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = ChangePasswordForm(user = request.user)
+
+    return render(request, "accounts/change_password.html", {'form': form})
