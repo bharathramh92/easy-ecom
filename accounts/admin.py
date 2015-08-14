@@ -32,4 +32,5 @@ class CustomerContactSellerAdmin(admin.ModelAdmin):
 admin.site.register(UserExtended, UserExtendedAdmin)
 admin.site.register(CustomerContactSeller, CustomerContactSellerAdmin)
 admin.site.register(EmailVerification)
+admin.site.register(ForgotPasswordVerification)
 admin.site.register(SellerFeedback)

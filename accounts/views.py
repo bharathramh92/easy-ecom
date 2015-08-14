@@ -7,13 +7,11 @@ from django.utils import timezone
 from .forms import LoginForm, RegisterForm, EmailForm, ForgotPasswordForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from .models import UserExtended
 from constants import accounts_messages as ac_msg
 from ecom_functions import random_alphanumeric as ran
 from django.core.mail import send_mail, EmailMessage
-from easy_ecom import settings
 from easy_ecom import settings_sensitive
-from .models import EmailVerification
+from .models import EmailVerification, ForgotPasswordVerification, UserExtended
 
 # Create your views here.
 def loginView(request):
@@ -30,6 +28,8 @@ def loginView(request):
                 if user is not None:
                     # the password verified for the user
                     if user.is_active:
+                        if not user.userextended.is_email_verified:
+                            return render(request, "accounts/email_not_verified.html",{})
                         login(request, user)
                         # print("User is valid, active and authenticated")
                         return HttpResponseRedirect(reverse('accounts:dashboard'))
@@ -60,7 +60,7 @@ def loginView(request):
                 user.last_name = lastName
                 user.save()
                 UserExtended(user = user).save()
-                send_store_verification_email(user)
+                send_verification_email(user)
                 return render(request, "accounts/new_user_registered.html",{})
 
             loginForm = LoginForm()
@@ -75,19 +75,43 @@ def loginView(request):
     # template.render({'knights': 'that say nih'})
     return render(request, "accounts/login.html",{'loginForm' : loginForm, 'registerForm' : registerForm, 'login_error_messages' : login_error_messages, 'register_error_messages': register_error_messages})
 
-def send_store_verification_email(user):
-    verification_code = ran.rand_alphanumeric()
+def send_verification_email(user):
+    try:
+        result = EmailVerification.objects.get(user = user)
+        if result.is_not_expired_email_verification:            #if verification code is not expired, send the same code, and set the email send time to now
+            result.sent_datetime = timezone.now()
+            result.save()
+            verification_code = result.verification_code
+        else:                                                   #if expired, delete the previous code
+            result.delete()
+            raise Exception
+    except Exception:
+        verification_code = ran.rand_alphanumeric()
+        email_ver_storage = EmailVerification.objects.create(user=user, verification_code = verification_code)
+
     email_msg = ac_msg.registration_email_verfication
     email_msg += "http://127.0.0.1:8000" + reverse('accounts:verify', kwargs= {'verification_code' : verification_code, 'username' : user.username})
-    send_mail('Verify your email', email_msg, settings_sensitive.EMAIL_HOST_USER, [user.email], fail_silently=False)
-    email_ver_storage = EmailVerification.objects.create(user=user, verification_code = verification_code)
+    send_mail('Verify your email', email_msg, settings_sensitive.EMAIL_HOST_USER, [user.email], fail_silently=True)
+
 
 def send_forgot_password_verification_email(user):
-    verification_code = ran.rand_alphanumeric()
+    try:
+        result = ForgotPasswordVerification.objects.get(user = user)
+        if result.is_not_expired_email_verification:            #if verification code is not expired, send the same code, and set the email send time to now
+            result.sent_datetime = timezone.now()
+            result.save()
+            verification_code = result.verification_code
+        else:                                                   #if expired, delete the previous code
+            result.delete()
+            raise Exception
+    except Exception:
+        verification_code = ran.rand_alphanumeric()
+        forgot_password_ver_storage = ForgotPasswordVerification.objects.create(user=user, verification_code = verification_code)
+
     email_msg = ac_msg.forgot_password_message
     email_msg += "http://127.0.0.1:8000" + reverse('accounts:forget_password_check')+ "?verification_code=" +  verification_code + '&username=' +  user.username
-    send_mail('Reset Password', email_msg, settings_sensitive.EMAIL_HOST_USER, [user.email], fail_silently=False)
-    email_ver_storage = EmailVerification.objects.create(user=user, verification_code = verification_code)
+    send_mail('Reset Password', email_msg, settings_sensitive.EMAIL_HOST_USER, [user.email], fail_silently=True)
+
 
 @login_required()
 def dashboardView(request):
@@ -98,7 +122,7 @@ def logoutView(request):
     logout(request)
     return HttpResponseRedirect(reverse('accounts:logout'))
 
-def verificationCheckView(request, verification_code, username):
+def emailVerificationCheckView(request, verification_code, username):
     if request.user.is_authenticated() and request.user.userextended.is_email_verified:   #in case user clicks more than one email verification link
          return HttpResponseRedirect(reverse('accounts:dashboard'))
     try:
@@ -124,7 +148,7 @@ def forgotPasswordCheckView(request):
         return render(request, "accounts/invalid_forgot_password_reset.html",{})
     else:
         try:
-            result = EmailVerification.objects.get(user__username = username, verification_code = verification_code)
+            result = ForgotPasswordVerification.objects.get(user__username = username, verification_code = verification_code)
             if not result.is_not_expired_forgot_password:
                 raise Exception
         except Exception:
@@ -196,11 +220,13 @@ def resendVerificationEmailView(request):
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
+
             email = form.cleaned_data['email']
             user = User.objects.get(email=email)
+
             if user.userextended.is_email_verified:
                 return render(request, "accounts/resend_verification_email.html", {'already_verified': True})
-            send_store_verification_email(user)
+            send_verification_email(user)
             return render(request, "accounts/resend_verification_email.html", {'success': True})
 
     # if a GET (or any other method) we'll create a blank form

@@ -46,6 +46,11 @@ class EmailVerification(models.Model):
         now = timezone.now()
         return now - datetime.timedelta(days = EMAIL_VERIFICATION_EXPIRATION_DAYS) < self.sent_datetime < now
 
+class ForgotPasswordVerification(models.Model):
+    user = models.ForeignKey(User)
+    verification_code = models.CharField(max_length=120)
+    sent_datetime = models.DateTimeField(default =  timezone.now)
+
     def is_not_expired_forgot_password(self):           #true if not expired. Taken care for future time as well(would return false).
         now = timezone.now()
         return now - datetime.timedelta(days = FORGOT_PASSWORD_EXPIRATION_DAYS) < self.sent_datetime < now
