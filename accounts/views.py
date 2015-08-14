@@ -7,7 +7,7 @@ from django.utils import timezone
 from .forms import LoginForm, RegisterForm, EmailForm, ForgotPasswordForm, ChangePasswordForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from constants import accounts_messages as ac_msg
+from . import accounts_messages as ac_msg
 from ecom_functions import random_alphanumeric as ran
 from django.core.mail import send_mail, EmailMessage
 from easy_ecom import settings_sensitive

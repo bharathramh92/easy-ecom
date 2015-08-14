@@ -7,10 +7,6 @@ class AddressInline(admin.StackedInline):
     model = Address
     extra = 1
 
-# class DiscussionForContactingSellerInline(admin.StackedInline):
-#     model = DiscussionForContactingSeller
-#     extra = 1
-
 class UserExtendedAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,               {'fields': ['user', 'selling_enabled']}),
@@ -21,16 +17,6 @@ class UserExtendedAdmin(admin.ModelAdmin):
     inlines = [AddressInline]
     list_display = ('user', 'selling_enabled')
 
-# class CustomerContactSellerAdmin(admin.ModelAdmin):
-#     fieldsets = [
-#         (None,               {'fields': ['contacted_by', 'seller']}),
-#         ('Message', {'fields': ['subject', 'message', 'posting_datetime']}),
-#     ]
-#     inlines = [DiscussionForContactingSellerInline]
-#     list_display = ('contacted_by', 'seller', 'subject', 'posting_datetime')
-
 admin.site.register(UserExtended, UserExtendedAdmin)
-# admin.site.register(CustomerContactSeller, CustomerContactSellerAdmin)
 admin.site.register(EmailVerification)
 admin.site.register(ForgotPasswordVerification)
-# admin.site.register(SellerFeedback)

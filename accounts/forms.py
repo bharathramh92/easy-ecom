@@ -2,7 +2,7 @@ from django import forms
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
-from constants import accounts_messages as ac_msg
+from . import accounts_messages as ac_msg
 
 class LoginForm(forms.Form):
 
