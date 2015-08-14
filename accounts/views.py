@@ -14,6 +14,12 @@ from easy_ecom import settings_sensitive
 from .models import EmailVerification, ForgotPasswordVerification, UserExtended
 
 # Create your views here.
+def changePassword(user, password):
+    user.set_password(password)
+    user.save()
+    user.userextended.last_updated_password_datetime = timezone.now()
+    user.userextended.save()
+
 def loginView(request):
     # if this is a POST request we need to process the form data
     login_error_messages, register_error_messages = [], []
@@ -78,8 +84,8 @@ def loginView(request):
 def send_verification_email(user):
     try:
         result = EmailVerification.objects.get(user = user)
-        if result.is_not_expired_email_verification:            #if verification code is not expired, send the same code, and set the email send time to now
-            result.sent_datetime = timezone.now()
+        if result.is_not_expired_email_verification():            #if verification code is not expired, send the same code
+            result.sent_datetime = timezone.now()               #reset the time
             result.save()
             verification_code = result.verification_code
         else:                                                   #if expired, delete the previous code
@@ -97,8 +103,8 @@ def send_verification_email(user):
 def send_forgot_password_verification_email(user):
     try:
         result = ForgotPasswordVerification.objects.get(user = user)
-        if result.is_not_expired_email_verification:            #if verification code is not expired, send the same code, and set the email send time to now
-            result.sent_datetime = timezone.now()
+        if result.is_not_expired_forgot_password():            #if verification code is not expired, send the same code
+            result.sent_datetime = timezone.now()               #reset the time
             result.save()
             verification_code = result.verification_code
         else:                                                   #if expired, delete the previous code
@@ -134,6 +140,7 @@ def emailVerificationCheckView(request, verification_code, username):
 
     user = User.objects.get(username = username)
     user.userextended.is_email_verified = True
+    user.userextended.email_verified_datetime = timezone.now()
     user.userextended.save()
     result.delete()
     return render(request, "accounts/email_verified.html",{})
@@ -165,8 +172,7 @@ def forgotPasswordCheckView(request):
         if form.is_valid():
             # process the data in form.cleaned_data as required
             password = form.cleaned_data['password']
-            user.set_password(password)
-            user.save()
+            changePassword(user, password)
             result.delete()
             return render(request, "accounts/forgot_password_reset_done.html",{})
 
@@ -181,6 +187,7 @@ def troubleLoginView(request):
     if request.user.is_authenticated():   #trouble login is for forgot password and resend verification alone
          return HttpResponseRedirect(reverse('accounts:dashboard'))
     return render(request, "accounts/trouble_login.html",{})
+
 
 def forgetPasswordView(request):
     if request.user.is_authenticated():   #forgot password is only if user couldn't login
@@ -248,8 +255,7 @@ def changePasswordView(request):
             # redirect to a new URL:
 
             newPassword = form.cleaned_data['newPassword']
-            request.user.set_password(newPassword)
-            request.user.save()
+            changePassword(request.user, newPassword)
             logout(request)
             return render(request, "accounts/change_password_done.html", {})
 

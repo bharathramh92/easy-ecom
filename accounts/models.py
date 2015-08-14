@@ -19,7 +19,7 @@ class UserExtended(models.Model):
     phone_number_verified_datetime = models.DateTimeField(null=True , blank= True)
     phone_number_updated_datetime = models.DateTimeField(null=True , blank= True)
     selling_enabled = models.BooleanField(default= False)
-
+    last_updated_password_datetime = models.DateTimeField(null=True , blank= True)
 
 class Address(models.Model):
     contact_name = models.CharField(max_length=100, null= False)
