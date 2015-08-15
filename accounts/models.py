@@ -1,16 +1,20 @@
 from django.db import models
 from django.contrib.auth.models import User
-from ecom_functions import random_alphanumeric
 from . import constants
 from django.utils import timezone
 import datetime
 
 # Create your models here.
-
 class UserExtended(models.Model):
     user = models.OneToOneField(User)
     profile_picture = models.CharField(max_length=100, null= True, blank= True)
     last_updated_profile_picture_datetime = models.DateTimeField(null=True , blank= True)
+    MALE, FEMALE = "M", "F"
+    GENDER_CHOICES = (
+        (MALE, "Male"),
+        (FEMALE, "Female")
+    )
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null= True, blank= True)
     phone_number = models.CharField(max_length = 15, null= True, blank= True)
     country_code_phone_number = models.CharField(max_length = 5, null= True, blank= True)
     is_email_verified = models.BooleanField(default=False)
@@ -23,11 +27,12 @@ class UserExtended(models.Model):
 
 class Address(models.Model):
     contact_name = models.CharField(max_length=100, null= False)
-    country_name = models.CharField(max_length=50, null= False)
+    country_name = models.CharField(max_length=52, null= False)
     city_name = models.CharField(max_length=50, null= False)
     state_name = models.CharField(max_length=50, null= False)
     street_address_line_1 = models.CharField(max_length= 60, null= False)
     street_address_line_2 = models.CharField(max_length= 60, null= True)
+    zipcode = models.CharField(max_length=32, null=False)
     phone_number = models.CharField(max_length = 15, null= False)
     country_code_phone_number = models.CharField(max_length = 5, null= False)
     added_datetime = models.DateTimeField(default= timezone.now)
