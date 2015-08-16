@@ -7,7 +7,7 @@ import datetime
 # Create your models here.
 class UserExtended(models.Model):
     user = models.OneToOneField(User)
-    profile_picture = models.CharField(max_length=100, null= True, blank= True)
+    profile_picture_url = models.CharField(max_length=200, null= True, blank= True)
     last_updated_profile_picture_datetime = models.DateTimeField(null=True , blank= True)
     MALE, FEMALE = "M", "F"
     GENDER_CHOICES = (
@@ -22,7 +22,6 @@ class UserExtended(models.Model):
     is_phone_number_verified = models.BooleanField(default=False)
     phone_number_verified_datetime = models.DateTimeField(null=True , blank= True)
     phone_number_updated_datetime = models.DateTimeField(null=True , blank= True)
-    selling_enabled = models.BooleanField(default= False)
     last_updated_password_datetime = models.DateTimeField(null=True , blank= True)
 
 class Address(models.Model):

@@ -1,0 +1,73 @@
+[
+{
+  "pk": 1,
+  "fields": {
+    "store_name": "Books"
+  },
+  "model": "store.storename"
+},
+{
+  "pk": 1,
+  "fields": {
+    "category_name": "Engineering & Transportation",
+    "store_fk": 1
+  },
+  "model": "store.category"
+},
+{
+  "pk": 1,
+  "fields": {
+    "category_fk": 1,
+    "sub_category_name": "Automotive"
+  },
+  "model": "store.subcategory"
+},
+{
+  "pk": 2,
+  "fields": {
+    "category_fk": 1,
+    "sub_category_name": "Engineering"
+  },
+  "model": "store.subcategory"
+},
+{
+  "pk": 3,
+  "fields": {
+    "category_fk": 1,
+    "sub_category_name": "Transportation"
+  },
+  "model": "store.subcategory"
+},
+{
+  "pk": 1,
+  "fields": {
+    "main_sub_category_name": "Aerospace",
+    "sub_category_fk": 2
+  },
+  "model": "store.mainsubcategory"
+},
+{
+  "pk": 2,
+  "fields": {
+    "main_sub_category_name": "Electrical &  Electronics",
+    "sub_category_fk": 2
+  },
+  "model": "store.mainsubcategory"
+},
+{
+  "pk": 3,
+  "fields": {
+    "main_sub_category_name": "Mechanical",
+    "sub_category_fk": 2
+  },
+  "model": "store.mainsubcategory"
+},
+{
+  "pk": 4,
+  "fields": {
+    "main_sub_category_name": "Civil & Environmental",
+    "sub_category_fk": 2
+  },
+  "model": "store.mainsubcategory"
+}
+]
