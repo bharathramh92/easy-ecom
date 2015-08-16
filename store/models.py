@@ -187,7 +187,7 @@ class Author(models.Model):
     website = models.URLField(null= True, blank= True)
 
 class BookStore(models.Model):
-    item = models.ForeignKey(Item, related_name= 'book_store_item')
+    item = models.OneToOneField(Item, related_name= 'book_store_item')
     isbn_10 = models.CharField(max_length=10)
     isbn_13 = models.CharField(max_length=13, primary_key= True)
     Language = models.CharField(max_length= 50)
