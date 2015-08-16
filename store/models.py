@@ -2,8 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from accounts.models import Address
-# Create your models here.
 
+# Create your models here.
 #Categories
 class StoreName(models.Model):
     store_name = models.CharField(max_length=50, null= False, blank= False)
@@ -31,7 +31,7 @@ class MainSubCategory(models.Model):
 
     def __str__(self):
         return self.main_sub_category_name
-
+###################################################################################
 #items
 class Item(models.Model):
     title = models.CharField(max_length=100, null= False, blank= False)
@@ -149,6 +149,8 @@ class Cart(models.Model):
     user = models.ForeignKey(User, related_name="cart_user")
     added_or_updated_datetime = models.DateTimeField(default = timezone.now)
 
+#############################################################################
+#Feedback
 class ContactUs(models.Model):
     email = models.EmailField(null= False, blank= False)
     subject = models.CharField(max_length=50, null= False, blank= False)
@@ -163,7 +165,6 @@ class ItemFeedback(models.Model):
     posting_datetime = models.DateTimeField(default =  timezone.now)
     last_updated_datetime = models.DateTimeField(null= True, blank= True)
 
-#seller feedback
 class SellerFeedback(models.Model):
     reviewer = models.ForeignKey(User, related_name= 'reviewed_by')
     seller = models.ForeignKey(User, related_name= 'seller')
@@ -171,3 +172,41 @@ class SellerFeedback(models.Model):
     review_points = models.PositiveSmallIntegerField(null= False, blank= False)
     posting_datetime = models.DateTimeField(default = timezone.now)
     last_updated_datetime = models.DateTimeField(null= True, blank= True)
+
+##################################################################################
+#Book Store
+class Publisher(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000, null= True, blank= True)
+    website = models.URLField(null= True, blank= True)
+    contact_email = models.EmailField(null= True, blank= True)
+
+class Author(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000, null= True, blank= True)
+    website = models.URLField(null= True, blank= True)
+
+class BookStore(models.Model):
+    item = models.ForeignKey(Item, related_name= 'book_store_item')
+    isbn_10 = models.CharField(max_length=10)
+    isbn_13 = models.CharField(max_length=13, primary_key= True)
+    Language = models.CharField(max_length= 50)
+
+    HARDCOVER, PAPERBACK = "H", "P"
+    TYPE_CHOICES = (
+        (HARDCOVER, "Hardcover"),
+        (PAPERBACK, "Paperback")
+    )
+    book_type = models.CharField(max_length=1, choices=TYPE_CHOICES, default=HARDCOVER, null= False, blank= False)
+
+    USED, NEW = "U", "N"
+    CONDITION_CHOICES = (
+        (USED, "Used"),
+        (NEW, "New")
+    )
+    book_condition = models.CharField(max_length=1, choices=CONDITION_CHOICES, default=NEW, null= False, blank= False)
+
+    authors = models.ManyToManyField(Author)
+    publisher = models.ForeignKey(Publisher)
+
+##########################################################################
