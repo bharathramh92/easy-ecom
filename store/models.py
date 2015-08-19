@@ -53,7 +53,7 @@ class Item(models.Model):
     shipping_product_weight = models.DecimalField(max_digits=10, decimal_places= 2, null= False, blank= False)
     OUNCES, POUNDS, MILLIGRAMS, GRAMS, KILOGRAMS = "OZ", "LB", "MG", "G", "KG"
     WEIGHT_CHOICES = (
-        (OUNCES, 'Inches'),
+        (OUNCES, 'Ounces'),
         (POUNDS, 'Pounds'),
         (MILLIGRAMS, 'Milligrams'),
         (GRAMS, 'Grams'),
@@ -64,7 +64,6 @@ class Item(models.Model):
     main_sub_category = models.ManyToManyField(MainSubCategory, related_name= 'main_sub_cat_item')  #one item can be in multiple categories, but in a same store
     posting_datetime = models.DateTimeField(default = timezone.now, null= False, blank= False)
     last_updated_datetime = models.DateTimeField(null= True, blank= True)
-
 
 class ItemMedia(models.Model):
     item = models.ForeignKey(Item, related_name= 'item_media')

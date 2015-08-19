@@ -1,0 +1,14 @@
+{% extends "sell/base.html" %}
+
+{% block title %}Add Book{% endblock %}
+
+{% block body %}
+
+<form action="{% url 'sell:newBookCheck' %}" method="post">
+        {% csrf_token %}
+        {{ itemForm }}
+        {{ bookForm }}
+        <input type="submit" value="Add">
+    </form>
+
+{% endblock %}
