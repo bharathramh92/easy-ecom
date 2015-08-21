@@ -1,3 +1,5 @@
+import autocomplete_light.shortcuts as al
+al.autodiscover()
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.core.urlresolvers import reverse
@@ -11,7 +13,7 @@ from ecom_functions import random_alphanumeric as ran
 from django.core.mail import send_mail, EmailMessage
 from easy_ecom import settings_sensitive
 from django.contrib.auth.decorators import login_required
-from .forms import StoreSelectForm, NewBookForm, ISBNCheckForm, ItemForm
+from .forms import StoreSelectForm, NewBookForm, NewBookISBNCheckForm, ItemForm, NewBookAuthorForm, NewBookPublisherForm
 from store.models import BookStore
 
 # Create your views here.
@@ -61,8 +63,10 @@ def addNewBook(request, isbn):
         # create a form instance and populate it with data from the request:
         bookForm = NewBookForm(request.POST)
         itemForm = ItemForm(request.POST)
+        authorForm = NewBookAuthorForm(request.POST)
+        publisherForm = NewBookPublisherForm(request.POST)
         # check whether it's valid:
-        if bookForm.is_valid() and itemForm.is_valid():
+        if bookForm.is_valid() and itemForm.is_valid() and authorForm.is_valid() and publisherForm.is_valid():
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
@@ -73,14 +77,17 @@ def addNewBook(request, isbn):
     else:
         bookForm = NewBookForm()
         itemForm = ItemForm()
-    return render(request, "sell/new_book.html", {'bookForm' : bookForm, 'itemForm': itemForm})
+        authorForm = NewBookAuthorForm()
+        publisherForm = NewBookPublisherForm()
+    return render(request, "sell/new_book.html",
+                  {'bookForm' : bookForm, 'itemForm': itemForm, 'authorForm': authorForm, 'publisherForm': publisherForm})
 
 @login_required()
 def addNewBookPKCheck(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        form = ISBNCheckForm(request.POST)
+        form = NewBookISBNCheckForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required
@@ -97,6 +104,6 @@ def addNewBookPKCheck(request):
 
     # if a GET (or any other method) we'll create a blank form
     else:
-        form = ISBNCheckForm()
+        form = NewBookISBNCheckForm()
 
     return render(request, "sell/new_book.html", {'bookForm': form})

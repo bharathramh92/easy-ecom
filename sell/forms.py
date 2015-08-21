@@ -1,11 +1,11 @@
 from django import forms
-from store.models import BookStore, StoreName, Item
+from store.models import BookStore, StoreName, Item, Author, Publisher
 
 class ItemForm(forms.ModelForm):
 
     class Meta:
         model = Item
-        fields = '__all__'
+        exclude = ['posting_datetime', 'last_updated_datetime']
 
 class StoreSelectForm(forms.Form):
 
@@ -16,9 +16,9 @@ class NewBookForm(forms.ModelForm):
 
     class Meta(ItemForm.Meta):
         model = BookStore
-        exclude = ['item']
+        exclude = ['item', 'authors', 'publisher']
 
-class ISBNCheckForm(forms.Form):
+class NewBookISBNCheckForm(forms.Form):
 
     isbn = forms.CharField(max_length= 13, min_length= 13, label= "ISBN", widget= forms.NumberInput())
 
@@ -29,3 +29,15 @@ class ISBNCheckForm(forms.Form):
         except Exception:
             self.add_error('isbn', "ISBN should be a number")
         return isbn
+
+class NewBookAuthorForm(forms.ModelForm):
+    class Meta:
+        model = Author
+        fields = ['name']
+        labels = {'name': 'Author Name'}
+
+class NewBookPublisherForm(forms.ModelForm):
+    class Meta:
+        model = Publisher
+        fields = ['name']
+        labels = {'name': 'Publisher Name'}

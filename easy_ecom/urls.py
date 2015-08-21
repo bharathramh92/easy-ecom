@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('accounts.urls', namespace="accounts")),
     url(r'^sell/', include('sell.urls', namespace="sell")),
+    url(r'^autocomplete/', include('autocomplete_light.urls')),
 ]

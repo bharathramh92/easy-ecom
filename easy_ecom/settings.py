@@ -35,6 +35,7 @@ INSTALLED_APPS = (
     'accounts',
     'store',
     'sell',
+    'autocomplete_light',
 )
 
 MIDDLEWARE_CLASSES = (
