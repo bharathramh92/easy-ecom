@@ -1,5 +1,5 @@
 from django import forms
-from store.models import BookStore, StoreName, Item, Author, Publisher
+from store.models import BookStore, Item, Author, Publisher
 
 class ItemForm(forms.ModelForm):
 
@@ -9,7 +9,7 @@ class ItemForm(forms.ModelForm):
 
 class StoreSelectForm(forms.Form):
 
-    store_name_choices = [(x.store_name, x.store_name) for x in StoreName.objects.all()]
+    store_name_choices = [(None, None)]
     store_names = forms.ChoiceField(label= "Select a store", choices= store_name_choices)
 
 class NewBookForm(forms.ModelForm):
