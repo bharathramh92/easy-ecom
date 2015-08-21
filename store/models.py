@@ -2,35 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from accounts.models import Address
-
+from categories.models import Category
 # Create your models here.
-#Categories
-class StoreName(models.Model):
-    store_name = models.CharField(max_length=50, null= False, blank= False)
-
-    def __str__(self):
-        return self.store_name
-
-class Category(models.Model):
-    category_name = models.CharField(max_length=50, null= False, blank= False)
-    store_fk = models.ForeignKey(StoreName)
-
-    def __str__(self):
-        return self.category_name
-
-class SubCategory(models.Model):
-    sub_category_name = models.CharField(max_length=50, null= False, blank= False)
-    category_fk = models.ForeignKey(Category)
-
-    def __str__(self):
-        return self.sub_category_name
-
-class MainSubCategory(models.Model):
-    main_sub_category_name = models.CharField(max_length=50, null= False, blank= False)
-    sub_category_fk = models.ForeignKey(SubCategory)
-
-    def __str__(self):
-        return self.main_sub_category_name
 ###################################################################################
 #items
 class Item(models.Model):
@@ -61,7 +34,7 @@ class Item(models.Model):
     )
     shipping_product_weight_units = models.CharField(max_length=2, choices=WEIGHT_CHOICES, default=OUNCES, null= False, blank= False)
 
-    main_sub_category = models.ManyToManyField(MainSubCategory, related_name= 'main_sub_cat_item')  #one item can be in multiple categories, but in a same store
+    category = models.ManyToManyField(Category, related_name= 'main_sub_cat_item')  #one item can be in multiple categories, but in a same store
     posting_datetime = models.DateTimeField(default = timezone.now, null= False, blank= False)
     last_updated_datetime = models.DateTimeField(null= True, blank= True)
 
