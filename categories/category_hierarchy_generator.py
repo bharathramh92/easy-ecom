@@ -1,6 +1,6 @@
 import json
 from collections import defaultdict
-from category_dict_json_output import category_dict
+from categories.category_dict_json_output import category_dict
 
 def get_category_raw_dict():
     """

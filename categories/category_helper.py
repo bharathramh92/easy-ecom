@@ -1,5 +1,5 @@
 import json
-from category_hierarchy_generator import get_category_raw_dict, get_category_hierarchy
+from categories.category_hierarchy_generator import get_category_raw_dict, get_category_hierarchy
 
 def get_category_list_data_json():
     return json.dumps(get_category_raw_dict())
