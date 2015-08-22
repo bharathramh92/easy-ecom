@@ -17,10 +17,22 @@ category = {
                                'Electronics' :
                                    {
                                        'parent_id': 5,
-                                       'Opto Electronics' : {'id':6},
-                                       'Transistors' : {'id':7},
-                                       'Solid State' : {'id':8},
-                                       'Semiconductors': {'id':9}
+                                       'Opto Electronics' :
+                                           {
+                                               'parent_id':6,
+                                           },
+                                       'Transistors' :
+                                           {
+                                               'parent_id':7,
+                                           },
+                                       'Solid State' :
+                                           {
+                                               'parent_id':8,
+                                           },
+                                       'Semiconductors':
+                                           {
+                                               'parent_id':9,
+                                           }
                                    },
                            },
                       },
@@ -28,13 +40,25 @@ category = {
             'Science & Math':
                 {
                     'parent_id': 1,
-                    'Mathematics':{
-                        'parent_id': 11,
-                        'Infinity':{'id':12},
-                        'Matrics':{'id':13},
-                        'Trigonometry' :{'id':14},
-                    },
-                    'Physics':{'id':15},
+                    'Mathematics':
+                        {
+                            'parent_id': 11,
+                            'Infinity':{
+                                'parent_id':12,
+                            },
+                            'Matrics':
+                                {
+                                    'parent_id':13,
+                                },
+                            'Trigonometry' :
+                                {
+                                'parent_id':14,
+                                },
+                        },
+                    'Physics':
+                        {
+                            'parent_id':15,
+                        },
                 },
              },
 }
@@ -62,10 +86,10 @@ def get_end_categories(path):
             break
     def go_below(category_data):
         for k, v in category_data.items():
-            if k not in ['id', 'parent_id']:
-                try:
-                    categories[k] = v['id']
-                except Exception:
+            if k not in ['parent_id']:
+                if len(v)==1:
+                    categories[k] = v['parent_id']
+                else:
                     go_below(category_data[k])
     go_below(category_data)
     return categories
@@ -74,7 +98,8 @@ def get_next_sub_category(path):
     """
     path should be like "Books > Engineering & Transportation >  Engineering". ie space to left and right of > symbol.
     :param path:
-    :return: returns dict. Key name 'list' has dict with key as category name and id as their value. Key end_level is boolean, true if end level reached.
+    :return: returns dict. Key name 'categories' has dict with key as category names and values is list of a dict,
+    whose 'id' refers to category id and 'end_level' refers to the condition whether it is the last level.
     """
     categories = {}
     path = path.split(' > ')
@@ -85,12 +110,13 @@ def get_next_sub_category(path):
             category_data = category_data[path.pop(0)]
         except Exception:
             break
-    end_level = False
     for k, v in category_data.items():
-        if k not in ['id', 'parent_id']:
-            try:
-                categories[k] = v['id']
-                end_level = True
-            except Exception:
-                categories[k] = v['parent_id']
-    return {'categories': categories, 'end_level': end_level}
+        if k not in ['parent_id']:
+            categories[k] = [{'id': v['parent_id'], 'end_level':'True' if len(v)==1 else 'False'}]
+    return {'categories': categories}
+
+
+if __name__ == '__main__':
+    path = 'Books > Science & Math'
+    print(get_end_categories(path))
+    # print(get_next_sub_category(path))
