@@ -1,5 +1,5 @@
 import json
-from .category_hierarchy_generator import get_category_raw_dict, get_category_hierarchy
+from category_hierarchy_generator import get_category_raw_dict, get_category_hierarchy
 
 def get_category_list_data_json():
     return json.dumps(get_category_raw_dict())
@@ -80,7 +80,8 @@ def get_reverse_path(pk):
 
 def get_category_name(pk):
     return get_category_raw_dict()[pk]['category_name']
-
+    
+#
 # if __name__ == '__main__':
 #     print(get_reverse_path(9))
 #     path = '1>10'
