@@ -80,8 +80,8 @@ def get_reverse_path(pk):
 
 def get_category_name(pk):
     return get_category_raw_dict()[pk]['category_name']
-    
-#
+
+
 # if __name__ == '__main__':
 #     print(get_reverse_path(9))
 #     path = '1>10'
