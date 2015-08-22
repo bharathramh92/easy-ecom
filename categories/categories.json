@@ -1,0 +1,137 @@
+[
+{
+  "model": "categories.category",
+  "fields": {
+    "category_name": "Books",
+    "description": "",
+    "parent_category": null
+  },
+  "pk": 1
+},
+{
+  "model": "categories.category",
+  "fields": {
+    "category_name": "Engineering & Transportation",
+    "description": "",
+    "parent_category": 1
+  },
+  "pk": 2
+},
+{
+  "model": "categories.category",
+  "fields": {
+    "category_name": "Engineering",
+    "description": "",
+    "parent_category": 2
+  },
+  "pk": 3
+},
+{
+  "model": "categories.category",
+  "fields": {
+    "category_name": "Electrical & Electronics",
+    "description": "",
+    "parent_category": 3
+  },
+  "pk": 4
+},
+{
+  "model": "categories.category",
+  "fields": {
+    "category_name": "Electronics",
+    "description": "",
+    "parent_category": 4
+  },
+  "pk": 5
+},
+{
+  "model": "categories.category",
+  "fields": {
+    "category_name": "Opto Electronics",
+    "description": "",
+    "parent_category": 5
+  },
+  "pk": 6
+},
+{
+  "model": "categories.category",
+  "fields": {
+    "category_name": "Transistors",
+    "description": "",
+    "parent_category": 5
+  },
+  "pk": 7
+},
+{
+  "model": "categories.category",
+  "fields": {
+    "category_name": "Solid State",
+    "description": "",
+    "parent_category": 5
+  },
+  "pk": 8
+},
+{
+  "model": "categories.category",
+  "fields": {
+    "category_name": "Semiconductors",
+    "description": "",
+    "parent_category": 5
+  },
+  "pk": 9
+},
+{
+  "model": "categories.category",
+  "fields": {
+    "category_name": "Science & Math",
+    "description": "",
+    "parent_category": 1
+  },
+  "pk": 10
+},
+{
+  "model": "categories.category",
+  "fields": {
+    "category_name": "Mathematics",
+    "description": "",
+    "parent_category": 10
+  },
+  "pk": 11
+},
+{
+  "model": "categories.category",
+  "fields": {
+    "category_name": "Infinity",
+    "description": "",
+    "parent_category": 11
+  },
+  "pk": 12
+},
+{
+  "model": "categories.category",
+  "fields": {
+    "category_name": "Matrics",
+    "description": "",
+    "parent_category": 11
+  },
+  "pk": 13
+},
+{
+  "model": "categories.category",
+  "fields": {
+    "category_name": "Trigonometry",
+    "description": "",
+    "parent_category": 11
+  },
+  "pk": 14
+},
+{
+  "model": "categories.category",
+  "fields": {
+    "category_name": "Physics",
+    "description": "",
+    "parent_category": 10
+  },
+  "pk": 15
+}
+]
