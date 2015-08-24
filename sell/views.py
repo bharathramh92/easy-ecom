@@ -15,6 +15,7 @@ from easy_ecom import settings_sensitive
 from django.contrib.auth.decorators import login_required
 from .forms import StoreSelectForm, NewBookForm, NewBookISBNCheckForm, ItemForm, NewBookAuthorForm, NewBookPublisherForm
 from store.models import BookStore
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 @login_required()
@@ -50,13 +51,13 @@ def editView(request):
 
 @login_required()
 def addNewBook(request, isbn):
-
     try:
-        BookStore.objects.get(pk=isbn)
-        raise PermissionDenied
-    except Exception:
+        if len(str(int(isbn))) == 13:       #double checking isbn format, since a direct request to this url could break our desired outcome.
+            BookStore.objects.get(pk=isbn)
+        else:
+            raise PermissionDenied
+    except ObjectDoesNotExist:
         pass
-
     # if this is a POST request we need to process the form data
     print("ISBN is " + isbn)
     if request.method == 'POST':

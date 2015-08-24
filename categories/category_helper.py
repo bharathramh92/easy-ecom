@@ -8,6 +8,8 @@ def get_category_list_dict():
     return get_category_raw_dict()
 
 def sanitize(path):
+    if path == '':
+        return []
     return path.replace(" ", "").split('>')
 
 def get_end_categories(path):
@@ -20,7 +22,6 @@ def get_end_categories(path):
     categories = {}
     path = sanitize(path)
     category_data = get_category_hierarchy()
-    print(category_data)
     while True:
         try:
             #Getting in to the given path in dict.
@@ -81,10 +82,17 @@ def get_reverse_path(pk):
 def get_category_name(pk):
     return get_category_raw_dict()[pk]['category_name']
 
+def get_category_store_names():
+    """
+    :return:Return first level names of category, which is defined as store
+    """
+    return {'store_names': {get_category_name(k): k} for k in get_next_sub_category('')['categories'].keys()}
 
-# if __name__ == '__main__':
-#     print(get_reverse_path(9))
-#     path = '1>10'
-#     print(get_end_categories(path))
-#     print(get_next_sub_category(path))
-#     print(get_category_name(5))
+
+if __name__ == '__main__':
+    path = '1'
+    print('reverse path is ',get_reverse_path(9))
+    print('end category is ', get_end_categories(path))
+    print('next sub category is ', get_next_sub_category(path))
+    print('category name is ', get_category_name(5))
+    print(get_category_store_names())

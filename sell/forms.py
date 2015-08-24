@@ -1,15 +1,15 @@
 from django import forms
 from store.models import BookStore, Item, Author, Publisher
+import autocomplete_light.shortcuts as autocomplete_light
+from categories.category_helper import get_category_store_names
 
 class ItemForm(forms.ModelForm):
-
     class Meta:
         model = Item
         exclude = ['posting_datetime', 'last_updated_datetime']
 
 class StoreSelectForm(forms.Form):
-
-    store_name_choices = [(None, None)]
+    store_name_choices = [(k, k) for k, v in get_category_store_names()['store_names'].items()]
     store_names = forms.ChoiceField(label= "Select a store", choices= store_name_choices)
 
 class NewBookForm(forms.ModelForm):
@@ -30,7 +30,7 @@ class NewBookISBNCheckForm(forms.Form):
             self.add_error('isbn', "ISBN should be a number")
         return isbn
 
-class NewBookAuthorForm(forms.ModelForm):
+class NewBookAuthorForm(autocomplete_light.ModelForm):
     class Meta:
         model = Author
         fields = ['name']
