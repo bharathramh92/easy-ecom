@@ -1,9 +1,14 @@
 from django import forms
 from store.models import BookStore, Item, Author, Publisher
 import autocomplete_light.shortcuts as autocomplete_light
-from categories.category_helper import get_category_store_names
+from categories.category_helper import get_category_store_names, get_end_categories, get_store_end_categories
 
 class ItemForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        store = kwargs.pop('store', None)
+        super(ItemForm, self).__init__(*args, **kwargs)
+        category_choices = [(v, k) for k, v in get_store_end_categories(store).items()]
+        self.fields['category'] = forms.MultipleChoiceField(label= "Select Categories", choices= category_choices)
     class Meta:
         model = Item
         exclude = ['posting_datetime', 'last_updated_datetime']

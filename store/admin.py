@@ -17,3 +17,6 @@ class PublisherAdmin(admin.ModelAdmin):
     list_display = ('name', 'created_by')
 
 admin.site.register(Publisher, PublisherAdmin)
+
+admin.site.register(Item)
+admin.site.register(BookStore)

@@ -10,7 +10,24 @@ def get_category_list_dict():
 def sanitize(path):
     if path == '':
         return []
-    return path.replace(" ", "").split('>')
+    return path.replace(" > ", ">").split('>')
+
+def get_name_id_dict():
+    name_id_dict = {}
+    for k,v in get_category_raw_dict():
+        name_id_dict[v['category_name']] = k
+    return name_id_dict
+
+def go_into_path(category_data, path):
+    while True:
+        try:
+            #Getting in to the given path in dict.
+            category_data = category_data[int(path.pop(0))]
+        except IndexError:
+            break
+        except (KeyError, ValueError):
+            raise ValueError("Invalid path")
+    return category_data
 
 def get_end_categories(path):
     """
@@ -22,15 +39,7 @@ def get_end_categories(path):
     categories = {}
     path = sanitize(path)
     category_data = get_category_hierarchy()
-    while True:
-        try:
-            #Getting in to the given path in dict.
-            category_data = category_data[int(path.pop(0))]
-        except IndexError:
-            break
-        except (KeyError, ValueError):
-            raise ValueError("Invalid path")
-            break
+    go_into_path(category_data, path)
     def go_below(category_data):
         for k, v in category_data.items():
             if bool(v):
@@ -50,15 +59,7 @@ def get_next_sub_category(path):
     categories = {}
     path = sanitize(path)
     category_data = get_category_hierarchy()            #since we are navigating into the category by pop() method.
-    while True:
-        try:
-            #Getting in to the given path in dict.
-            category_data = category_data[int(path.pop(0))]
-        except IndexError:
-            break
-        except (KeyError, ValueError):
-            raise ValueError("Invalid path")
-            break
+    go_into_path(category_data, path)
     for k, v in category_data.items():
         categories[k] = 'False' if bool(v) else 'True'
     return {'categories': categories}
@@ -88,11 +89,14 @@ def get_category_store_names():
     """
     return {'store_names': {get_category_name(k): k} for k in get_next_sub_category('')['categories'].keys()}
 
+def get_store_end_categories(store_name):
+    return get_end_categories(str(get_category_store_names()['store_names'][store_name]))
 
-if __name__ == '__main__':
-    path = '1'
-    print('reverse path is ',get_reverse_path(9))
-    print('end category is ', get_end_categories(path))
-    print('next sub category is ', get_next_sub_category(path))
-    print('category name is ', get_category_name(5))
-    print(get_category_store_names())
+# if __name__ == '__main__':
+#     path = '1'
+#     print('reverse path is ',get_reverse_path(9))
+#     print('end category is ', get_end_categories(path))
+#     print('next sub category is ', get_next_sub_category(path))
+#     print('category name is ', get_category_name(5))
+#     print('store names are ', get_category_store_names())
+#     print('get_store_end_categories', get_store_end_categories('Books'))

@@ -12,7 +12,7 @@ from django.core.mail import send_mail, EmailMessage
 from easy_ecom import settings_sensitive
 from django.contrib.auth.decorators import login_required
 from .forms import StoreSelectForm, NewBookForm, NewBookISBNCheckForm, ItemForm, NewBookAuthorForm, NewBookPublisherForm
-from store.models import BookStore
+from store.models import BookStore, Item, Author, Publisher
 from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
@@ -60,7 +60,7 @@ def addNewBook(request, isbn):
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         bookForm = NewBookForm(request.POST)
-        itemForm = ItemForm(request.POST)
+        itemForm = ItemForm(request.POST, store="Books")
         authorForm = NewBookAuthorForm(request.POST)
         publisherForm = NewBookPublisherForm(request.POST)
         # check whether it's valid:
@@ -69,17 +69,48 @@ def addNewBook(request, isbn):
             # ...
             # redirect to a new URL:
 
-            return HttpResponseRedirect('done')
-        print('yo yo')
+            title = itemForm.cleaned_data['title']
+            description = itemForm.cleaned_data['description']
+            brand = itemForm.cleaned_data['brand']
+            shipping_product_dimension_height = itemForm.cleaned_data['shipping_product_dimension_height']
+            shipping_product_dimension_width = itemForm.cleaned_data['shipping_product_dimension_width']
+            shipping_product_dimension_length = itemForm.cleaned_data['shipping_product_dimension_length']
+            shipping_product_dimension_units = itemForm.cleaned_data['shipping_product_dimension_units']
+            shipping_product_weight = itemForm.cleaned_data['shipping_product_weight']
+            shipping_product_weight_units = itemForm.cleaned_data['shipping_product_weight_units']
+            category = itemForm.cleaned_data['category']
+            item = Item.objects.create(title= title, description= description, brand= brand, shipping_product_dimension_height= shipping_product_dimension_height,
+                               shipping_product_dimension_width= shipping_product_dimension_width, shipping_product_dimension_length= shipping_product_dimension_length,
+                               shipping_product_dimension_units= shipping_product_dimension_units, shipping_product_weight= shipping_product_weight,
+                               shipping_product_weight_units= shipping_product_weight_units)
+            item.category.add(*category)
+
+            isbn_10 = bookForm.cleaned_data['isbn_10']
+            isbn_13 = bookForm.cleaned_data['isbn_13']
+            language = bookForm.cleaned_data['language']
+            book_type = bookForm.cleaned_data['book_type']
+            book_condition = bookForm.cleaned_data['book_condition']
+            publisher = publisherForm.cleaned_data['name']
+
+            book = BookStore.objects.create(isbn_10=isbn_10, isbn_13=isbn_13, language=language, book_type=book_type,
+                                           book_condition= book_condition, item=item, publisher= publisher)
+            authors = authorForm.cleaned_data['name']
+            book.authors.add(*authors)
+
+            return HttpResponseRedirect(reverse('sell:newInventory'))
     # if a GET (or any other method) we'll create a blank form
     else:
         bookForm = NewBookForm()
-        itemForm = ItemForm()
+        itemForm = ItemForm(store="Books")
         authorForm = NewBookAuthorForm()
         publisherForm = NewBookPublisherForm()
     return render(request, "sell/new_book.html",
                   {'bookForm' : bookForm, 'itemForm': itemForm, 'authorForm': authorForm, 'publisherForm': publisherForm,
                   'isbn': isbn})
+
+@login_required()
+def newInventory(request):
+    return render(request, 'sell/new_inventory.html', {})
 
 @login_required()
 def addNewBookPKCheck(request):

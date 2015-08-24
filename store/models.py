@@ -170,7 +170,12 @@ class BookStore(models.Model):
     item = models.OneToOneField(Item, related_name= 'book_store_item')
     isbn_10 = models.CharField(max_length=10)
     isbn_13 = models.CharField(max_length=13, primary_key= True)
-    Language = models.CharField(max_length= 50)
+    ENGLISH, FRENCH = "eng", "fre"
+    LANGUAGE_CHOICE = (
+        (ENGLISH, "English"),
+        (FRENCH, "French")
+    )
+    language = models.CharField(max_length= 3, choices=LANGUAGE_CHOICE, default=ENGLISH, null= False, blank= False)
 
     HARDCOVER, PAPERBACK = "H", "P"
     TYPE_CHOICES = (
