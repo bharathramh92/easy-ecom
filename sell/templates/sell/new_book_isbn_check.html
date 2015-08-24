@@ -4,12 +4,9 @@
 
 {% block body %}
 
-<form action="{% url 'sell:newBook' isbn %}" method="post">
+<form action="{% url 'sell:newBookCheck' %}" method="post">
         {% csrf_token %}
-        {{ itemForm }}
-        {{ bookForm }}
-    {{ authorForm}}
-    {{ publisherForm }}
+        {{ isbnCheckForm }}
         <input type="submit" value="Add">
     </form>
 

@@ -31,13 +31,13 @@ class NewBookISBNCheckForm(forms.Form):
         return isbn
 
 class NewBookAuthorForm(autocomplete_light.ModelForm):
+    name = autocomplete_light.ModelMultipleChoiceField('AuthorAutocomplete', label = 'Author Name')
     class Meta:
         model = Author
         fields = ['name']
-        labels = {'name': 'Author Name'}
 
 class NewBookPublisherForm(forms.ModelForm):
+    name = autocomplete_light.ModelChoiceField('PublisherAutocomplete', label = 'Publisher Name')
     class Meta:
         model = Publisher
         fields = ['name']
-        labels = {'name': 'Publisher Name'}

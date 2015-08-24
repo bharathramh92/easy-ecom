@@ -1,5 +1,3 @@
-import autocomplete_light.shortcuts as al
-al.autodiscover()
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.core.urlresolvers import reverse
@@ -59,7 +57,6 @@ def addNewBook(request, isbn):
     except ObjectDoesNotExist:
         pass
     # if this is a POST request we need to process the form data
-    print("ISBN is " + isbn)
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         bookForm = NewBookForm(request.POST)
@@ -73,7 +70,7 @@ def addNewBook(request, isbn):
             # redirect to a new URL:
 
             return HttpResponseRedirect('done')
-
+        print('yo yo')
     # if a GET (or any other method) we'll create a blank form
     else:
         bookForm = NewBookForm()
@@ -81,7 +78,8 @@ def addNewBook(request, isbn):
         authorForm = NewBookAuthorForm()
         publisherForm = NewBookPublisherForm()
     return render(request, "sell/new_book.html",
-                  {'bookForm' : bookForm, 'itemForm': itemForm, 'authorForm': authorForm, 'publisherForm': publisherForm})
+                  {'bookForm' : bookForm, 'itemForm': itemForm, 'authorForm': authorForm, 'publisherForm': publisherForm,
+                  'isbn': isbn})
 
 @login_required()
 def addNewBookPKCheck(request):
@@ -107,4 +105,4 @@ def addNewBookPKCheck(request):
     else:
         form = NewBookISBNCheckForm()
 
-    return render(request, "sell/new_book.html", {'bookForm': form})
+    return render(request, "sell/new_book_isbn_check.html", {'isbnCheckForm': form})

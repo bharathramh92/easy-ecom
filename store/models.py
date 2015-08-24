@@ -154,11 +154,17 @@ class Publisher(models.Model):
     contact_email = models.EmailField(null= True, blank= True)
     created_by = models.ForeignKey(User, null= True, blank= True)
 
+    def __str__(self):
+        return self.name
+
 class Author(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=1000, null= True, blank= True)
     website = models.URLField(null= True, blank= True)
     created_by = models.ForeignKey(User, null= True, blank= True)
+
+    def __str__(self):
+        return self.name
 
 class BookStore(models.Model):
     item = models.OneToOneField(Item, related_name= 'book_store_item')

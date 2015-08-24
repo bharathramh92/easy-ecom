@@ -9,3 +9,11 @@ class AuthorAdmin(admin.ModelAdmin):
     list_display = ('name', 'created_by')
 
 admin.site.register(Author, AuthorAdmin)
+
+class PublisherAdmin(admin.ModelAdmin):
+    fieldsets = [
+        (None,               {'fields': ['name', 'description', 'website', 'created_by', 'contact_email']}),
+    ]
+    list_display = ('name', 'created_by')
+
+admin.site.register(Publisher, PublisherAdmin)
