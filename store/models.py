@@ -9,7 +9,7 @@ from categories.models import Category
 class Item(models.Model):
     title = models.CharField(max_length=100, null= False, blank= False)
     description = models.CharField(max_length=2000, null= False, blank= False)
-    brand = models.CharField(max_length=50, null= False, blank= False)
+    # brand = models.CharField(max_length=50, null= False, blank= False)
 
     shipping_product_dimension_height = models.DecimalField(max_digits=10, decimal_places= 2, null= False, blank= False)
     shipping_product_dimension_width = models.DecimalField(max_digits=10, decimal_places= 2, null= False, blank= False)
