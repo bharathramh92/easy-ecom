@@ -3,10 +3,11 @@
 {% block title %}Inventory Addition{% endblock %}
 
 {% block body %}
-
-<form action="{% url 'sell:newInventory' %}" method="post">
+<form action="{% url 'sell:newInventory' %}{{get_params}}" method="post">
         {% csrf_token %}
-    {{form}}
+    <p>Leave international shipping details blank if worldwide shipping is not available.</p>
+    <p>Currency will be of shipping countries currency</p>
+    {{inventoryForm}}
         <input type="submit" value="Add">
     </form>
 

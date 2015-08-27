@@ -3,6 +3,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from . import accounts_messages as ac_msg
+from .models import Address
 
 class LoginForm(forms.Form):
 
@@ -146,3 +147,9 @@ class ChangePasswordForm(forms.Form):
             self.add_error('newPassword', ac_msg.registration_passwords_not_matching)
 
         return cleaned_data
+
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        exclude = ['user', 'last_updated_datetime', 'added_datetime']

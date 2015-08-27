@@ -6,7 +6,7 @@ import datetime
 from django.utils import timezone
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from ecom_functions import random_alphanumeric as ran
+from helper import random_alphanumeric as ran
 from django.core.mail import send_mail, EmailMessage
 from easy_ecom import settings_sensitive
 

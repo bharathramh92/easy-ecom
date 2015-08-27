@@ -7,13 +7,16 @@ import datetime
 from django.utils import timezone
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from ecom_functions import random_alphanumeric as ran
+from helper import random_alphanumeric as ran
 from django.core.mail import send_mail, EmailMessage
 from easy_ecom import settings_sensitive
 from django.contrib.auth.decorators import login_required
-from .forms import StoreSelectForm, NewBookForm, NewBookISBNCheckForm, ItemForm, NewBookAuthorForm, NewBookPublisherForm
-from store.models import BookStore, Item, Author, Publisher
+from .forms import StoreSelectForm, NewBookForm, NewBookISBNCheckForm, ItemForm, NewBookAuthorForm, \
+    NewBookPublisherForm, InventoryForm
+from accounts.forms import AddressForm
+from store.models import BookStore, Item, Author, Publisher, Inventory
 from django.core.exceptions import ObjectDoesNotExist
+from helper import custom_http
 
 # Create your views here.
 @login_required()
@@ -49,6 +52,7 @@ def editView(request):
 
 @login_required()
 def addNewBook(request, isbn):
+    store_name = "Books"
     try:
         if len(str(int(isbn))) == 13:       #double checking isbn format, since a direct request to this url could break our desired outcome.
             BookStore.objects.get(pk=isbn)
@@ -60,7 +64,7 @@ def addNewBook(request, isbn):
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         bookForm = NewBookForm(request.POST)
-        itemForm = ItemForm(request.POST, store="Books")
+        itemForm = ItemForm(request.POST, store=store_name)
         authorForm = NewBookAuthorForm(request.POST)
         publisherForm = NewBookPublisherForm(request.POST)
         # check whether it's valid:
@@ -71,7 +75,6 @@ def addNewBook(request, isbn):
 
             title = itemForm.cleaned_data['title']
             description = itemForm.cleaned_data['description']
-            brand = itemForm.cleaned_data['brand']
             shipping_product_dimension_height = itemForm.cleaned_data['shipping_product_dimension_height']
             shipping_product_dimension_width = itemForm.cleaned_data['shipping_product_dimension_width']
             shipping_product_dimension_length = itemForm.cleaned_data['shipping_product_dimension_length']
@@ -79,7 +82,7 @@ def addNewBook(request, isbn):
             shipping_product_weight = itemForm.cleaned_data['shipping_product_weight']
             shipping_product_weight_units = itemForm.cleaned_data['shipping_product_weight_units']
             category = itemForm.cleaned_data['category']
-            item = Item.objects.create(title= title, description= description, brand= brand, shipping_product_dimension_height= shipping_product_dimension_height,
+            item = Item.objects.create(title= title, description= description, shipping_product_dimension_height= shipping_product_dimension_height,
                                shipping_product_dimension_width= shipping_product_dimension_width, shipping_product_dimension_length= shipping_product_dimension_length,
                                shipping_product_dimension_units= shipping_product_dimension_units, shipping_product_weight= shipping_product_weight,
                                shipping_product_weight_units= shipping_product_weight_units)
@@ -88,16 +91,14 @@ def addNewBook(request, isbn):
             isbn_10 = bookForm.cleaned_data['isbn_10']
             isbn_13 = bookForm.cleaned_data['isbn_13']
             language = bookForm.cleaned_data['language']
-            book_type = bookForm.cleaned_data['book_type']
-            book_condition = bookForm.cleaned_data['book_condition']
             publisher = publisherForm.cleaned_data['name']
 
-            book = BookStore.objects.create(isbn_10=isbn_10, isbn_13=isbn_13, language=language, book_type=book_type,
-                                           book_condition= book_condition, item=item, publisher= publisher)
+            book = BookStore.objects.create(isbn_10=isbn_10, isbn_13=isbn_13, language=language,
+                                            item=item, publisher= publisher)
             authors = authorForm.cleaned_data['name']
             book.authors.add(*authors)
 
-            return HttpResponseRedirect(reverse('sell:newInventory'))
+            return HttpResponseRedirect(reverse('sell:newInventory') + '?store_name=' + store_name + '&id=' + isbn_13)
     # if a GET (or any other method) we'll create a blank form
     else:
         bookForm = NewBookForm()
@@ -110,7 +111,62 @@ def addNewBook(request, isbn):
 
 @login_required()
 def newInventory(request):
-    return render(request, 'sell/new_inventory.html', {})
+    try:    #Proceed only if object exists for that store.
+        store_name= request.GET['store_name']
+        id = request.GET['id']
+        #retrieve item object as well
+        if store_name == "Books":
+            book = BookStore.objects.get(pk=id)
+            item = book.item
+        else:
+            raise ObjectDoesNotExist
+        if len(Inventory.objects.filter(item = item, seller=request.user)) != 0:
+            return render(request, 'sell/new_inventory_present_already.html', {})
+    except Exception:
+        raise PermissionDenied
+
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        inventoryForm = InventoryForm(request.POST, user= request.user.userextended)
+        # check whether it's valid:
+        if inventoryForm.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            price = inventoryForm.cleaned_data['price']
+            # currency-->  # make a dict to map country and currency
+            total_available_stock = inventoryForm.cleaned_data['total_available_stock']
+            address = inventoryForm.cleaned_data['address']
+            available_countries = inventoryForm.cleaned_data['available_countries']
+            domestic_shipping_company = inventoryForm.cleaned_data['domestic_shipping_company']
+            domestic_shipping_cost = inventoryForm.cleaned_data['domestic_shipping_cost']
+            free_domestic_shipping = inventoryForm.cleaned_data['free_domestic_shipping']
+            international_shipping_company = inventoryForm.cleaned_data['international_shipping_company']
+            international_shipping_cost = inventoryForm.cleaned_data['international_shipping_cost']
+            free_international_shipping = inventoryForm.cleaned_data['free_international_shipping']
+            local_pick_up_accepted = inventoryForm.cleaned_data['local_pick_up_accepted']
+            dispatch_max_time = inventoryForm.cleaned_data['dispatch_max_time']
+            return_accepted = inventoryForm.cleaned_data['return_accepted']
+            listing_end_datetime = inventoryForm.cleaned_data['listing_end_datetime']
+            condition = inventoryForm.cleaned_data['condition']
+
+            Inventory.objects.create(item=item, seller=request.user, price=price, total_available_stock= total_available_stock,
+                                     item_location= address, available_countries= available_countries,
+                                     domestic_shipping_company= domestic_shipping_company, domestic_shipping_cost= domestic_shipping_cost,
+                                     free_domestic_shipping= free_domestic_shipping, international_shipping_company=international_shipping_company,
+                                     free_international_shipping=free_international_shipping, local_pick_up_accepted= local_pick_up_accepted,
+                                     dispatch_max_time= dispatch_max_time, return_accepted= return_accepted,
+                                     listing_end_datetime= listing_end_datetime, condition= condition, international_shipping_cost=international_shipping_cost,
+
+            )
+
+            # redirect to item page:
+            return HttpResponseRedirect('done')
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        inventoryForm = InventoryForm(user= request.user.userextended)
+    return render(request, 'sell/new_inventory.html', {'inventoryForm': inventoryForm, 'get_params': custom_http.get_from_request_GET(request)})
 
 @login_required()
 def addNewBookPKCheck(request):

@@ -1,7 +1,8 @@
 from django import forms
-from store.models import BookStore, Item, Author, Publisher
+from store.models import BookStore, Item, Author, Publisher, Inventory
 import autocomplete_light.shortcuts as autocomplete_light
 from categories.category_helper import get_category_store_names, get_end_categories, get_store_end_categories
+from accounts.models import Address
 
 class ItemForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -46,3 +47,15 @@ class NewBookPublisherForm(forms.ModelForm):
     class Meta:
         model = Publisher
         fields = ['name']
+
+class InventoryForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(InventoryForm, self).__init__(*args, **kwargs)
+        self.fields['address'] = forms.ModelChoiceField(label= "Item Location",
+                                                        queryset= Address.objects.filter(user= user))
+    class Meta:
+        model = Inventory
+        exclude = ['item', 'seller', 'total_sold', 'currency', 'item_location', ]
+        labels = {'condition': 'Item Condition', }
+        help_texts = {'dispatch_max_time': 'In hours', }

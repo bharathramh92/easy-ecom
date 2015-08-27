@@ -20,3 +20,4 @@ admin.site.register(Publisher, PublisherAdmin)
 
 admin.site.register(Item)
 admin.site.register(BookStore)
+admin.site.register(Inventory)

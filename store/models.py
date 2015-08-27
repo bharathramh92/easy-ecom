@@ -55,9 +55,9 @@ class Inventory(models.Model):
     seller = models.ForeignKey(User, related_name= 'seller_inventory')
 
     price = models.DecimalField(max_digits=19, decimal_places= 4)
-    currency = models.CharField(max_length=3, default= 'USD')           #http://www.xe.com/iso4217.php use this to populate
+    currency = models.CharField(max_length=3, default= 'USD', null=False, blank= False)           #http://www.xe.com/iso4217.php use this to populate
     total_available_stock = models.PositiveIntegerField(null= False, blank= False)
-    total_sold = models.PositiveIntegerField(null= False, blank= False)
+    total_sold = models.PositiveIntegerField(default=0, null= False, blank= False)
 
     item_location = models.ForeignKey(Address, related_name= 'item_location_address')
 
@@ -78,12 +78,14 @@ class Inventory(models.Model):
 
     local_pick_up_accepted = models.BooleanField(null= False, blank= False)
 
-    dispatch_max_time = models.PositiveIntegerField()                      #in hours
+    dispatch_max_time = models.PositiveIntegerField(null= False, blank= False)                      #in hours
     return_accepted = models.BooleanField(null= False, blank= False)
 
     listing_end_datetime = models.DateTimeField(default= timezone.now, null= False, blank= False)
 
-#remaining details are pending
+    condition = models.CharField(max_length=1, default='n', null= False, blank= False)
+
+#remaining details are pending for payment
 class Payment(models.Model):
     tax = models.DecimalField(max_digits=19, decimal_places= 4)
     total_amount_payed = models.DecimalField(max_digits=19, decimal_places= 4)
@@ -179,20 +181,6 @@ class BookStore(models.Model):
         (FRENCH, "French")
     )
     language = models.CharField(max_length= 3, choices=LANGUAGE_CHOICE, default=ENGLISH, null= False, blank= False)
-
-    HARDCOVER, PAPERBACK = "H", "P"
-    TYPE_CHOICES = (
-        (HARDCOVER, "Hardcover"),
-        (PAPERBACK, "Paperback")
-    )
-    book_type = models.CharField(max_length=1, choices=TYPE_CHOICES, default=HARDCOVER, null= False, blank= False)
-
-    USED, NEW = "U", "N"
-    CONDITION_CHOICES = (
-        (USED, "Used"),
-        (NEW, "New")
-    )
-    book_condition = models.CharField(max_length=1, choices=CONDITION_CHOICES, default=NEW, null= False, blank= False)
 
     authors = models.ManyToManyField(Author)
     publisher = models.ForeignKey(Publisher)

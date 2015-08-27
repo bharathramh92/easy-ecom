@@ -30,7 +30,7 @@ class Address(models.Model):
     city_name = models.CharField(max_length=50, null= False)
     state_name = models.CharField(max_length=50, null= False)
     street_address_line_1 = models.CharField(max_length= 60, null= False)
-    street_address_line_2 = models.CharField(max_length= 60, null= True)
+    street_address_line_2 = models.CharField(max_length= 60, null= True, blank= True)
     zipcode = models.CharField(max_length=32, null=False)
     phone_number = models.CharField(max_length = 15, null= False)
     country_code_phone_number = models.CharField(max_length = 5, null= False)
@@ -39,7 +39,8 @@ class Address(models.Model):
     user = models.ForeignKey(UserExtended)
 
     def __str__(self):
-        return self.contact_name + self.street_address_line_1 + self.city_name + self.country_name
+        return self.contact_name + ' ' + self.street_address_line_1 + ' ' + self.street_address_line_2 \
+               + ' ' + self.city_name + ' ' + self.country_name
 
 class EmailVerification(models.Model):
     user = models.ForeignKey(User)
