@@ -50,20 +50,23 @@ class ItemMedia(models.Model):
     photo_or_video = models.CharField(max_length=1, choices=MEDIA_CHOICES, default=PHOTO, null= False, blank= False)
     added_datetime = models.DateTimeField(default = timezone.now, null= False, blank= False)
 
-class SellingAddress(Address):                      #instead of using a additional boolean field for address in accounts in order to encapsulate accounts
-    pass
-
 class Inventory(models.Model):
     item = models.ForeignKey(Item, related_name= 'item_inventory')
     seller = models.ForeignKey(User, related_name= 'seller_inventory')
 
     price = models.DecimalField(max_digits=19, decimal_places= 4)
-    currency = models.CharField(max_length=3)           #http://www.xe.com/iso4217.php use this to populate
+    currency = models.CharField(max_length=3, default= 'USD')           #http://www.xe.com/iso4217.php use this to populate
     total_available_stock = models.PositiveIntegerField(null= False, blank= False)
     total_sold = models.PositiveIntegerField(null= False, blank= False)
 
-    item_location = models.ForeignKey(SellingAddress, related_name= 'item_location_address')
-    available_countries = models.CharField(max_length=52)             #origin country or worldwide
+    item_location = models.ForeignKey(Address, related_name= 'item_location_address')
+
+    DOMESTIC, WORLDWIDE = "Domestic", "Worldwide"
+    AVAILABLE_COUNTRY_CHOICES = (
+        (DOMESTIC, "Domestic"),
+        (WORLDWIDE, "Worldwide")
+    )
+    available_countries = models.CharField(max_length=12, choices= AVAILABLE_COUNTRY_CHOICES,default=WORLDWIDE, null= False, blank= False)             #origin country or worldwide
 
     domestic_shipping_company = models.CharField(max_length=100, null= True, blank= True)
     domestic_shipping_cost = models.DecimalField(max_digits=19, decimal_places= 4, null= True, blank= True)
