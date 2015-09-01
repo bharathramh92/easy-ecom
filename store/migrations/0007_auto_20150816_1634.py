@@ -23,8 +23,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='BookStore',
             fields=[
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
                 ('isbn_10', models.CharField(max_length=10)),
-                ('isbn_13', models.CharField(primary_key=True, max_length=13, serialize=False)),
+                ('isbn_13', models.CharField(max_length=13, serialize=False)),
                 ('Language', models.CharField(max_length=50)),
                 ('book_type', models.CharField(choices=[('H', 'Hardcover'), ('P', 'Paperback')], default='H', max_length=1)),
                 ('book_condition', models.CharField(choices=[('U', 'Used'), ('N', 'New')], default='N', max_length=1)),
