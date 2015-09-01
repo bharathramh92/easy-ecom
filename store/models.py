@@ -84,6 +84,7 @@ class Inventory(models.Model):
     listing_end_datetime = models.DateTimeField(default= timezone.now, null= False, blank= False)
 
     condition = models.CharField(max_length=1, default='n', null= False, blank= False)
+    visibility = models.BooleanField(default= True)
 
 #remaining details are pending for payment
 class Payment(models.Model):
