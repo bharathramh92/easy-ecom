@@ -12,7 +12,7 @@ from django.core.mail import send_mail, EmailMessage
 from easy_ecom import settings_sensitive
 from django.contrib.auth.decorators import login_required
 from .forms import StoreSelectForm, NewBookForm, NewBookISBNCheckForm, ItemForm, NewBookAuthorForm, \
-    NewBookPublisherForm, InventoryForm, NewAuthorForm
+    NewBookPublisherForm, InventoryForm, NewAuthorForm, NewPublisherForm
 from accounts.forms import AddressForm
 from store.models import BookStore, Item, Author, Publisher, Inventory
 from django.core.exceptions import ObjectDoesNotExist
@@ -217,3 +217,25 @@ def newAuthor(request):
         form = NewAuthorForm()
 
     return render(request, 'sell/new_author.html', {'form': form})
+
+@login_required()
+def newPublisher(request):
+    pass
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = NewPublisherForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            name = form.cleaned_data['name']
+            Publisher.objects.create(name = name, created_by = request.user)
+            return render(request, 'sell/new_publisher_added.html', {'form': form})
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = NewPublisherForm()
+
+    return render(request, 'sell/new_publisher.html', {'form': form})

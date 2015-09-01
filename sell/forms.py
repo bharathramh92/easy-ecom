@@ -74,3 +74,17 @@ class NewAuthorForm(forms.ModelForm):
                                    "Use " + name + " in required field directly.")
         except ObjectDoesNotExist:
             return name
+
+class NewPublisherForm(forms.ModelForm):
+    class Meta:
+        model = Publisher
+        fields = ['name', ]
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        try:
+            Publisher.objects.get(name= name)
+            self.add_error('name', "Publisher already present. No need to add the same name."
+                                   "Use " + name + " in required field directly.")
+        except ObjectDoesNotExist:
+            return name

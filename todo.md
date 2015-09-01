@@ -15,7 +15,7 @@ Login
 
 Book/Inventory Listing
 - [ ] redirect from add inventory in book exists for that isbn
-- [ ] add widget for new author, new publisher
+- [x] add widget for new author, new publisher
 - [ ] auto completion for address in inventory. Add widget as well.
 - [ ] add help texts for all forms
 - [ ] editing inventory
