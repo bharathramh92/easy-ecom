@@ -93,7 +93,7 @@ class Payment(models.Model):
 
 class Invoice(models.Model):
     payment = models.OneToOneField(Payment)
-    order_datetime = models.DateTimeField(default = timezone.now)
+    order_datetime = models.DateTimeField(default= timezone.now)
 
 class Order(models.Model):
     inventory = models.ForeignKey(Inventory, related_name= 'inventory_order')

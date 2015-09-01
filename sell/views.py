@@ -161,7 +161,7 @@ def newInventory(request):
             )
 
             # redirect to item page:
-            return HttpResponseRedirect('done')
+            return render(request, 'sell/new_inventory_added.html', {})
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -181,8 +181,10 @@ def addNewBookPKCheck(request):
             # redirect to a new URL:
             isbn = form.cleaned_data['isbn']
             try:
-                BookStore.objects.get(pk=isbn)
+                book = BookStore.objects.get(pk=isbn)
                 #if found, redirect him to add as a seller in the listing
+                get = '?store=Books&id=book.pk'
+                return HttpResponse(reverse('sell:newInventory')+ get)
                 print("add him to the inventory")
             except Exception:
                 #if not found, create a new book
