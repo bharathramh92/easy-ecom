@@ -3,6 +3,7 @@ from store.models import BookStore, Item, Author, Publisher, Inventory
 import autocomplete_light.shortcuts as autocomplete_light
 from categories.category_helper import get_category_store_names, get_end_categories, get_store_end_categories
 from accounts.models import Address
+from django.core.exceptions import ObjectDoesNotExist
 
 class ItemForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -59,3 +60,17 @@ class InventoryForm(forms.ModelForm):
         exclude = ['item', 'seller', 'total_sold', 'currency', 'item_location', ]
         labels = {'condition': 'Item Condition', }
         help_texts = {'dispatch_max_time': 'In hours', }
+
+class NewAuthorForm(forms.ModelForm):
+    class Meta:
+        model = Author
+        fields = ['name', ]
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        try:
+            Author.objects.get(name= name)
+            self.add_error('name', "Author already present. No need to add the same name."
+                                   "Use " + name + " in required field directly.")
+        except ObjectDoesNotExist:
+            return name

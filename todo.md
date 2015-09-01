@@ -14,6 +14,7 @@ Login
 - [ ] testing
 
 Book/Inventory Listing
+- [ ] redirect from add inventory in book exists for that isbn
 - [ ] add widget for new author, new publisher
 - [ ] auto completion for address in inventory. Add widget as well.
 - [ ] add help texts for all forms
@@ -63,3 +64,6 @@ Schedulers
 - [ ] remove expired rows in forgot password table
 - [ ] testing
 - [ ] completion of order after 72hrs once the item is delivered. then initiate payment for the seller
+
+Admin Console
+- [ ] category hierarchical view
