@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from accounts.forms import AddressForm
 import datetime
 from django.utils import timezone
 from .forms import LoginForm, RegisterForm, EmailForm, ForgotPasswordForm, ChangePasswordForm
@@ -11,7 +12,7 @@ from . import accounts_messages as ac_msg
 from helper import random_alphanumeric as ran
 from django.core.mail import send_mail, EmailMessage
 from easy_ecom import settings_sensitive
-from .models import EmailVerification, ForgotPasswordVerification, UserExtended
+from .models import EmailVerification, ForgotPasswordVerification, UserExtended, Address
 
 # Create your views here.
 def changePassword(user, password):
@@ -264,3 +265,42 @@ def changePasswordView(request):
         form = ChangePasswordForm(user = request.user)
 
     return render(request, "accounts/change_password.html", {'form': form})
+
+
+@login_required()
+def newAddress(request):
+    user = request.user
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = AddressForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+
+            contact_name = form.cleaned_data['contact_name']
+            country_name = form.cleaned_data['country_name']
+            city_name = form.cleaned_data['city_name']
+            state_name = form.cleaned_data['state_name']
+            street_address_line_1 = form.cleaned_data['street_address_line_1']
+            street_address_line_2 = form.cleaned_data['street_address_line_2']
+            zipcode = form.cleaned_data['zipcode']
+            phone_number = form.cleaned_data['phone_number']
+            country_code_phone_number = form.cleaned_data['country_code_phone_number']
+
+            Address.objects.create\
+                (user = request.user.userextended, contact_name = contact_name, country_name=country_name,
+                 city_name = city_name,state_name = state_name, street_address_line_1 = street_address_line_1,
+                 street_address_line_2 = street_address_line_2, zipcode = zipcode,
+                 phone_number = phone_number, country_code_phone_number = country_code_phone_number,
+                 )
+
+            return HttpResponseRedirect('/thanks/')
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = AddressForm()
+
+    return render(request, "accounts/new_address.html", {'form': form})
