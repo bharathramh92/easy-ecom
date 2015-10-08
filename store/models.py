@@ -38,6 +38,9 @@ class Item(models.Model):
     posting_datetime = models.DateTimeField(default = timezone.now, null= False, blank= False)
     last_updated_datetime = models.DateTimeField(null= True, blank= True)
 
+    def __str__(self):
+        return self.title
+
 class ItemMedia(models.Model):
     item = models.ForeignKey(Item, related_name= 'item_media')
     url = models.CharField(max_length=250, null= False, blank= False)
@@ -83,8 +86,16 @@ class Inventory(models.Model):
 
     listing_end_datetime = models.DateTimeField(default= timezone.now, null= False, blank= False)
 
-    condition = models.CharField(max_length=1, default='n', null= False, blank= False)
+    NEW, USED = 'n', 'u'
+    CONDITION_CHOICES = (
+        (NEW, "New"),
+        (USED, "Used"),
+    )
+    condition = models.CharField(max_length=1, choices= CONDITION_CHOICES, default=NEW, null= False, blank= False)
     visibility = models.BooleanField(default= True)
+
+    def __str__(self):
+        return "%s... by %s %s"%(self.item.title[:20], self.seller.first_name, self.seller.last_name)
 
 #remaining details are pending for payment
 class Payment(models.Model):
@@ -185,5 +196,8 @@ class BookStore(models.Model):
 
     authors = models.ManyToManyField(Author)
     publisher = models.ForeignKey(Publisher)
+
+    def get_book_name(self):
+        return self.item.title
 
 ##########################################################################

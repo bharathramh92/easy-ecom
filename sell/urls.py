@@ -15,4 +15,6 @@ urlpatterns = [
     url(r'^new/book/addPublisher$', views.newPublisher, name= "newPublisher"),
     url(r'^new/book/(?P<isbn>[0-9]*)/$', views.addNewBook, name= "newBook"),
     url(r'^new/book/$', views.addNewBookPKCheck, name= "newBookCheck"),
+
+
 ]

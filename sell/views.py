@@ -98,7 +98,7 @@ def addNewBook(request, isbn):
             authors = authorForm.cleaned_data['name']
             book.authors.add(*authors)
 
-            return HttpResponseRedirect(reverse('sell:newInventory') + '?store_name=' + store_name + '&id=' + isbn_13)
+            return HttpResponseRedirect(reverse('sell:newInventory') + '?store_name=' + store_name + '&isbn_13=' + isbn_13)
     # if a GET (or any other method) we'll create a blank form
     else:
         bookForm = NewBookForm()
@@ -109,20 +109,24 @@ def addNewBook(request, isbn):
                   {'bookForm' : bookForm, 'itemForm': itemForm, 'authorForm': authorForm, 'publisherForm': publisherForm,
                   'isbn': isbn})
 
+class StoreNotFoundException(Exception):
+    pass
+
 @login_required()
 def newInventory(request):
     try:    #Proceed only if object exists for that store.
         store_name= request.GET['store_name']
-        id = request.GET['id']
         #retrieve item object as well
         if store_name == "Books":
-            book = BookStore.objects.get(pk=id)
+            isbn_13 = request.GET['isbn_13']
+            book = BookStore.objects.get(isbn_13=isbn_13)
             item = book.item
         else:
-            raise ObjectDoesNotExist
+            raise StoreNotFoundException
         if len(Inventory.objects.filter(item = item, seller=request.user)) != 0:
             return render(request, 'sell/new_inventory_present_already.html', {})
-    except Exception:
+    except (ObjectDoesNotExist, StoreNotFoundException) as e:
+        print(e)
         raise PermissionDenied
 
     # if this is a POST request we need to process the form data
@@ -185,7 +189,7 @@ def addNewBookPKCheck(request):
                 #if found, redirect him to add as a seller in the listing
                 get = '?store=Books&id=book.pk'
                 return HttpResponse(reverse('sell:newInventory')+ get)
-                print("add him to the inventory")
+                # print("add him to the inventory")
             except Exception:
                 #if not found, create a new book
                 return HttpResponseRedirect(reverse('sell:newBook', kwargs= {'isbn' : isbn}))
@@ -220,7 +224,6 @@ def newAuthor(request):
 
 @login_required()
 def newPublisher(request):
-    pass
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:

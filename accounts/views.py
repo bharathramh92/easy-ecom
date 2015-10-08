@@ -293,11 +293,11 @@ def newAddress(request):
             Address.objects.create\
                 (user = request.user.userextended, contact_name = contact_name, country_name=country_name,
                  city_name = city_name,state_name = state_name, street_address_line_1 = street_address_line_1,
-                 street_address_line_2 = street_address_line_2, zipcode = zipcode,
-                 phone_number = phone_number, country_code_phone_number = country_code_phone_number,
+                 street_address_line_2 = street_address_line_2, zipcode = zipcode, phone_number = phone_number,
+                 country_code_phone_number = country_code_phone_number,
                  )
 
-            return HttpResponseRedirect('/thanks/')
+            return render(request, "accounts/new_address_added.html", {})
 
     # if a GET (or any other method) we'll create a blank form
     else:

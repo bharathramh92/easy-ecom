@@ -25,6 +25,8 @@ class NewBookForm(forms.ModelForm):
         model = BookStore
         exclude = ['item', 'authors', 'publisher']
 
+class NotLen13ISBNException(Exception):
+    pass
 class NewBookISBNCheckForm(forms.Form):
 
     isbn = forms.CharField(max_length= 13, min_length= 13, label= "ISBN", widget= forms.NumberInput())
@@ -32,9 +34,12 @@ class NewBookISBNCheckForm(forms.Form):
     def clean_isbn(self):
         isbn = self.cleaned_data['isbn']
         try:
-            int(isbn)
-        except Exception:
+            if len(int(isbn)) != 13:
+                raise NotLen13ISBNException
+        except ValueError:
             self.add_error('isbn', "ISBN should be a number")
+        except NotLen13ISBNException:
+            self.add_error('isbn', "ISBN should be of length 13")
         return isbn
 
 class NewBookAuthorForm(autocomplete_light.ModelForm):
@@ -57,7 +62,7 @@ class InventoryForm(forms.ModelForm):
                                                         queryset= Address.objects.filter(user= user))
     class Meta:
         model = Inventory
-        exclude = ['item', 'seller', 'total_sold', 'currency', 'item_location', ]
+        exclude = ['item', 'seller', 'total_sold', 'currency', 'item_location', 'visibility', ]
         labels = {'condition': 'Item Condition', }
         help_texts = {'dispatch_max_time': 'In hours', }
 

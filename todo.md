@@ -22,6 +22,9 @@ Book/Inventory Listing
 - [ ] form validations
 - [ ] testing
 
+Category
+- [ ] show categories
+
 Cart
 - to be
 
@@ -52,6 +55,9 @@ Listings
 Basic
 - [ ] new stores
 - [ ] testing
+
+Buy
+- [ ] create separate address class like ItemAddress
 
 Payment
 - to be

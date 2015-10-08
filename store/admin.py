@@ -18,6 +18,13 @@ class PublisherAdmin(admin.ModelAdmin):
 
 admin.site.register(Publisher, PublisherAdmin)
 
-admin.site.register(Item)
-admin.site.register(BookStore)
+class ItemAdmin(admin.ModelAdmin):
+    list_display = ('title', )
+
+admin.site.register(Item, ItemAdmin)
+
+class BookStoreAdmin(admin.ModelAdmin):
+    list_display = ('get_book_name', )
+
+admin.site.register(BookStore, BookStoreAdmin)
 admin.site.register(Inventory)
